@@ -214,7 +214,7 @@ if data_file is not None:
     
     status = LpStatus[mod_co.status]
     st.write("Status:", status)
-    st.write("Costo Total = ", "${:,.0f}".format(value(mod_co.objective)),  size=36)
+    st.write("Costo Total = ", "${:,.0f}".format(value(mod_co.objective)),  size=50)
     
     Resultados2 = []
     i=0
@@ -244,7 +244,7 @@ if data_file is not None:
     csv = convert_df(df_pivot)
     
     st.download_button(
-   "Press to Download",
+   "Presiona para descargar",
    csv,
    "file.csv",
    "text/csv",
