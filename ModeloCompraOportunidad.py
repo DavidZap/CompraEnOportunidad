@@ -1,4 +1,4 @@
-pip install pulp 
+!pip install pulp 
 from pulp import *
 import pandas as pd
 from openpyxl import load_workbook, Workbook
