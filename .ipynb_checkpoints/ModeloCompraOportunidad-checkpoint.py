@@ -126,7 +126,7 @@ if data_file is not None:
 
         
         
-    if restricciones["Costo de los Inventarios"]:
+    if restricciones["Costo de los Inventarios"] == True:
         
         costoKgInventario_INI = st.slider("Costo por Kg del Inventario", 0, 10000, 800)
         
@@ -183,26 +183,22 @@ if data_file is not None:
         
 #### Crear Funcion objetivo 
 
-    if restricciones["Costo de los Inventarios"] == True & restricciones["Costo de Transporte"] == False :
-        #CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)]
+    # for m in materiales:
+    #     for s in semanas:
+    #         mod_co += CostoTotal[(s,m)] == Compra[(s,m)]*precios[s][m] 
 
-        for m in materiales:
-            for s in semanas:
-                mod_co += CostoTotal[(s,m)] ==  CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)]  + Compra[(s,m)]*precios[s][m]
-                
-    elif restricciones["Costo de Transporte"]== True & restricciones["Costo de los Inventarios"]  == False: 
-        for m in materiales:
-            for s in semanas:
-                mod_co += CostoTotal[(s,m)] == CostoTransporte[(s,m)] + Compra[(s,m)]*precios[s][m]
-                
-    elif restricciones["Costo de Transporte"] == True & restricciones["Costo de los Inventarios"] ==True : 
-        for m in materiales:
-            for s in semanas:
+    for m in materiales:
+        for s in semanas:
+            if restricciones["Costo de los Inventarios"] and restricciones["Costo de Transporte"]:
                 mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] + CostoTransporte[(s,m)] + Compra[(s,m)]*precios[s][m]
-    else:
-        for m in materiales:
-            for s in semanas:
-                mod_co += CostoTotal[(s,m)] == Compra[(s,m)]*precios[s][m] 
+            elif restricciones["Costo de Transporte"]:
+                mod_co += CostoTotal[(s,m)] == CostoTransporte[(s,m)] + Compra[(s,m)]*precios[s][m]
+            elif restricciones["Costo de los Inventarios"]:
+                mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] + Compra[(s,m)]*precios[s][m]
+            else:
+                mod_co += CostoTotal[(s,m)] == Compra[(s,m)]*precios[s][m]
+
+
             
                 
     
