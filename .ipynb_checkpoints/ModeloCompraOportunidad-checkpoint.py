@@ -180,12 +180,6 @@ if data_file is not None:
             for s in semanas:
                 mod_co += CostoTransporte[(s,m)] == demanda[s][m] * CostoTransporte_valor
         
-        
-#### Crear Funcion objetivo 
-
-    # for m in materiales:
-    #     for s in semanas:
-    #         mod_co += CostoTotal[(s,m)] == Compra[(s,m)]*precios[s][m] 
 
     for m in materiales:
         for s in semanas:
@@ -197,10 +191,7 @@ if data_file is not None:
                 mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] + Compra[(s,m)]*precios[s][m]
             else:
                 mod_co += CostoTotal[(s,m)] == Compra[(s,m)]*precios[s][m]
-
-
-            
-                
+        
     
     # SOLVE
 
@@ -208,9 +199,14 @@ if data_file is not None:
     
     # Estatus Solución
     
+    # dos columnas para los resultados de la optimización
+    col0, col1 = st.columns(2)
+    
     status = LpStatus[mod_co.status]
-    st.write("Status:", status)
-    st.write("Costo Total = ", "${:,.0f}".format(value(mod_co.objective)),  size=50)
+    # st.write("Status:", status)
+    col0.metric("Estado de la optimización: ", status)
+    # st.write("Costo Total = ", "${:,.0f}".format(value(mod_co.objective)),  size=50)
+    col1.metric("Estado Costo Total es: ", "${:,.0f}".format(value(mod_co.objective)))
     
     Resultados2 = []
     i=0
