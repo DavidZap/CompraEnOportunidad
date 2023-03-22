@@ -204,9 +204,9 @@ if data_file is not None:
     
     status = LpStatus[mod_co.status]
     # st.write("Status:", status)
-    col0.metric("Estado de la optimización: ", ("Optimo" if status=="Optimal" else "Inviable"))
+    col0.metric("Estado de la optimización: ", ("Óptimo" if status =="Optimal" else "Inviable"))
     # st.write("Costo Total = ", "${:,.0f}".format(value(mod_co.objective)),  size=50)
-    col1.metric("Estado Costo Total es: ", "${:,.0f}".format(value(mod_co.objective)))
+    col1.metric("Costo Total: ", "${:,.0f}".format(value(mod_co.objective)))
     
     Resultados2 = []
     i=0
