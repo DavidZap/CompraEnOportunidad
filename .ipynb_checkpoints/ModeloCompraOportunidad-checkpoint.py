@@ -70,6 +70,8 @@ if data_file is not None:
             mod_co += Inventario[(s,m)]  >= demanda[s][m]
             
     # Juego de Inventarios
+    
+    inventarioInicial = st.slider("Inventario Inicial", 0, 2000000, 1140000)
 
     cont=-1
     for m in materiales:
@@ -109,7 +111,7 @@ if data_file is not None:
     restricciones = generar_interfaz_opciones_restriccion(restricciones)
 
 
-    inventarioInicial = st.slider("Inventario Inicial", 0, 2000000, 1140000)
+    # inventarioInicial = st.slider("Inventario Inicial", 0, 2000000, 1140000)
     
     if restricciones["Politica Inventario Máximo y Mínimo"]:
         
