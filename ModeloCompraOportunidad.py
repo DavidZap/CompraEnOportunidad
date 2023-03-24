@@ -40,13 +40,13 @@ if data_file is not None:
     
     # Definimos los valores por defecto de los parámetros
     
-    # inventarioInicial = 1140000 #kg
-    # inventarioMaximo = 25 # semanas #Buscar Equilibrio, para que no sea infactible 
-    # inventarioMinimo = 2 # semanas #Buscar Equilibrio, para que no sea infactible 
-    # costoKgInventario_INI = 5661 #$/kg
-    # CostoCapitalNM = 0.22 #tasa porcentaje 
-    # costoAlmacenamiento_valor = 270 # $/kg mes
-    # CostoTransporte_valor = 50 # $/kg 
+    inventarioInicial = 1140000 #kg
+    inventarioMaximo = 25 # semanas #Buscar Equilibrio, para que no sea infactible 
+    inventarioMinimo = 2 # semanas #Buscar Equilibrio, para que no sea infactible 
+    costoKgInventario_INI = 5661 #$/kg
+    CostoCapitalNM = 0.22 #tasa porcentaje 
+    costoAlmacenamiento_valor = 270 # $/kg mes
+    CostoTransporte_valor = 50 # $/kg 
     
     mod_co = LpProblem("Compra Oportunidad", LpMinimize)
     
