@@ -4,6 +4,7 @@ from openpyxl import load_workbook, Workbook
 import re
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+import plotly.express as px
 import streamlit as st
 from st_aggrid import AgGrid, GridUpdateMode, JsCode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -91,6 +92,7 @@ if data_file is not None:
 
     def generar_interfaz_opciones_restriccion(restricciones):
         st.sidebar.title("Opciones de restricción")
+        # st.sidebar.caption("Elige las restricciones que deseas incluir en el modelo.")
         for restriccion in restricciones:
             restricciones[restriccion] = st.sidebar.checkbox(f"Incluir {restriccion}", value=True)
         return restricciones
@@ -178,13 +180,13 @@ if data_file is not None:
 
         for m in materiales:
             for s in semanas:
-                mod_co += CostoTransporte[(s,m)] == demanda[s][m] * CostoTransporte_valor
+                mod_co += CostoTransporte[(s,m)] == Compra[(s,m)] * CostoTransporte_valor
         
 
     for m in materiales:
         for s in semanas:
             if restricciones["Costo de los Inventarios"] and restricciones["Costo de Transporte"]:
-                mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] + CostoTransporte[(s,m)] + Compra[(s,m)]*precios[s][m]
+                mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] + CostoTransporte[(s,m)] # + Compra[(s,m)]*precios[s][m]
             elif restricciones["Costo de Transporte"]:
                 mod_co += CostoTotal[(s,m)] == CostoTransporte[(s,m)] + Compra[(s,m)]*precios[s][m]
             elif restricciones["Costo de los Inventarios"]:
@@ -198,6 +200,7 @@ if data_file is not None:
     mod_co.solve(solver = pulp.PULP_CBC_CMD(msg=True, threads=8, warmStart=True, timeLimit=260000, cuts=True, strong=True, presolve=True, gapRel=0.01))
     
     # Estatus Solución
+    st.subheader('Resultados de la Optimización')
     
     # dos columnas para los resultados de la optimización
     col0, col1 = st.columns(2)
@@ -227,7 +230,6 @@ if data_file is not None:
     for i in list(df_pivot.columns)[2:]:
         df_pivot[i] = df_pivot[i].apply(lambda x: int('{:.0f}'.format(x)))
     
-    st.subheader('Resultados de la Optimización')
     st.write(df_pivot)
     
     def convert_df(df):
@@ -244,6 +246,8 @@ if data_file is not None:
     
     # Creación del Grafico 
     
+    st.subheader('Momentos de Compra vs Demanda, Inventario y Precios 📈')
+    st.write("En esta gráfica puedes visualizar los momentos óptimos para realizar la compra, junto con el comportamiento de los inventarios, la demanda y los precios.")
     
     
     Resultado_Compras = Resultado[Resultado['Variable']=="Compra"]
@@ -263,40 +267,116 @@ if data_file is not None:
     fig.add_trace(go.Scatter(x=Resultado_Compras['Semana'], y=Resultado_Compras['Precios'], 
                              name='Precios', mode='lines', line=dict(color='orange'), legendrank=True), secondary_y=True)
     
-    fig.add_trace(go.Scatter(x=Resultado_CostoTotal['Semana'], y=Resultado_CostoTotal['Valor'], 
-                             name='Costo Total', mode='markers', line=dict(color='purple'), legendrank=True), secondary_y=True)
+#     fig.add_trace(go.Scatter(x=Resultado_CostoTotal['Semana'], y=Resultado_CostoTotal['Valor'], 
+#                              name='Costo Total', mode='markers', line=dict(color='purple'), legendrank=True), secondary_y=True)
     
-    if restricciones["Costo de los Inventarios"] :
+#     if restricciones["Costo de los Inventarios"] :
         
-        Resultado_CostoAlmacenamiento = Resultado[Resultado['Variable']=="CostoAlmacenamiento"]
-        Resultado_CostoInventario = Resultado[Resultado['Variable']=="CostoInventario"]
-        Resultado_CostoCapital = Resultado[Resultado['Variable']=="CostoCapital"]
+#         Resultado_CostoAlmacenamiento = Resultado[Resultado['Variable']=="CostoAlmacenamiento"]
+#         Resultado_CostoInventario = Resultado[Resultado['Variable']=="CostoInventario"]
+#         Resultado_CostoCapital = Resultado[Resultado['Variable']=="CostoCapital"]
         
-        fig.add_trace(go.Scatter(x=Resultado_CostoAlmacenamiento['Semana'], y=Resultado_CostoAlmacenamiento['Valor'], 
-                                 name='Costo Almacenamiento', mode='lines', line=dict(color='grey'), legendrank=True), secondary_y=True)
+#         fig.add_trace(go.Scatter(x=Resultado_CostoAlmacenamiento['Semana'], y=Resultado_CostoAlmacenamiento['Valor'], 
+#                                  name='Costo Almacenamiento', mode='lines', line=dict(color='grey'), legendrank=True), secondary_y=True)
 
-        fig.add_trace(go.Scatter(x=Resultado_CostoInventario['Semana'], y=Resultado_CostoInventario['Valor'], 
-                                 name='Costo Inventario', mode='markers', line=dict(color='pink'), legendrank=True), secondary_y=True)
+#         fig.add_trace(go.Scatter(x=Resultado_CostoInventario['Semana'], y=Resultado_CostoInventario['Valor'], 
+#                                  name='Costo Inventario', mode='markers', line=dict(color='pink'), legendrank=True), secondary_y=True)
 
-        fig.add_trace(go.Scatter(x=Resultado_CostoCapital['Semana'], y=Resultado_CostoCapital['Valor'], 
-                                 name='Costo Capital', mode='markers', line=dict(color='brown'), legendrank=True), secondary_y=True)
+#         fig.add_trace(go.Scatter(x=Resultado_CostoCapital['Semana'], y=Resultado_CostoCapital['Valor'], 
+#                                  name='Costo Capital', mode='markers', line=dict(color='brown'), legendrank=True), secondary_y=True)
     
-    if restricciones["Costo de Transporte"]:
+#     if restricciones["Costo de Transporte"]:
 
-        Resultado_CostoTransporte = Resultado[Resultado['Variable']=="CostoTransporte"]
+#         Resultado_CostoTransporte = Resultado[Resultado['Variable']=="CostoTransporte"]
 
 
-        fig.add_trace(go.Scatter(x=Resultado_CostoTransporte['Semana'], y=Resultado_CostoTransporte['Valor'], 
-                                 name='Costo Transporte', mode='markers', line=dict(color='gold'), legendrank=True), secondary_y=True)
-
+#         fig.add_trace(go.Scatter(x=Resultado_CostoTransporte['Semana'], y=Resultado_CostoTransporte['Valor'], 
+#                                  name='Costo Transporte', mode='markers', line=dict(color='gold'), legendrank=True), secondary_y=True)
 
 
     fig.update_layout(title='Compra de Oportunidad',
                       xaxis=dict(title='Semana'),
                       yaxis=dict(title='Unidades'),
-                      yaxis2=dict(title='Precios', overlaying='y', side='right'))
+                      yaxis2=dict(title='Precios', overlaying='y', side='right'),
+                     legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
+                ))
 
     st.write(fig)
+    
+    # Definir Gráficos de datos acumulados
+    
+    columnasAcumular = df_pivot.columns[2:]
+    
+    df_pivot2 = df_pivot.copy()
+    
+    for i in columnasAcumular:
+        df_pivot2[f'{i}Acumulado']= df_pivot2[i].cumsum()
+    
+    # df_pivot2 = df_pivot2.filter(like='Acumulado')
+    
+    df_melted = pd.melt(df_pivot2, id_vars='Semana', value_vars=df_pivot2.filter(like='Acumulado').columns)
+    
+    # Graficar Costo total acumulado
+    # fig = go.Figure()
+    # fig.add_trace(go.bar(name="Costo Total Acumulado",x = df_melted[df_melted.Variable == 'CostoTotalAcumulado'], y=df_melted[df_melted.Variable == 'CostoTotalAcumulado']['value']))
+    
+    st.subheader('Costos Acumulados 💰')
+    
+    
+    fig = px.bar(df_melted[df_melted.Variable == 'CostoTotalAcumulado'], x='Semana', y='value', color='Variable', barmode='stack', text_auto='$,.0f')
+    
+    fig.update_traces(textfont_size=50, textangle=90, textposition="inside", cliponaxis=False)
+    
+    fig.update_traces(name='Costo total acumulado', textfont_size=50, textangle=90, textposition="inside", cliponaxis=False)
+    
+    fig.update_layout(title='Acumulado del Costo Total',
+                  xaxis=dict(title='Semana'),
+                  yaxis=dict(title='Moneda'),
+                     legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            ))
+    
+    st.write(fig)
+    
+    df_melted['Variable'] = df_melted['Variable'].str.replace('([a-z])([A-Z])', r'\1 \2')
+    
+    csv = convert_df(df_melted)
+    
+    st.download_button(
+   "Presiona para descargar el resultado con las variables acumuladas",
+   csv,
+   "file.csv",
+   "text/csv",
+   key='download-csv2')
+    
+    if restricciones["Costo de los Inventarios"] or restricciones["Costo de Transporte"]:
+
+        fig = px.bar(df_melted[~df_melted['Variable'].isin(['Costo Total Acumulado', 'Compra Acumulado', 'Inventario Acumulado'])]
+                        , x='Semana', y='value', color='Variable', barmode='stack', text_auto='$,.0f')
+
+
+        fig.update_layout(title='Composición del Costo',
+                      xaxis=dict(title='Semana'),
+                      yaxis=dict(title='Moneda'),
+                         legend=dict(
+                            orientation="h",
+                            yanchor="bottom",
+                            y=1.02,
+                            xanchor="right",
+                            x=0.71
+                        ))
+
+        st.write(fig)
+
 
 
   
