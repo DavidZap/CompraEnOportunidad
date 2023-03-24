@@ -349,7 +349,7 @@ if data_file is not None:
     
     df_melted['Variable'] = df_melted['Variable'].str.replace('([a-z])([A-Z])', r'\1 \2')
     
-    csv = convert_df(df_melted)
+    csv = convert_df(df_pivot2)
     
     st.download_button(
    "Presiona para descargar el resultado con las variables acumuladas",
