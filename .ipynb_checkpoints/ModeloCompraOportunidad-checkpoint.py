@@ -109,9 +109,6 @@ if data_file is not None:
         
     # Creamos la interfaz de usuario con Streamlit, para encender o no restricciones 
     restricciones = generar_interfaz_opciones_restriccion(restricciones)
-
-
-    # inventarioInicial = st.slider("Inventario Inicial", 0, 2000000, 1140000)
     
     if restricciones["Politica Inventario Máximo y Mínimo"]:
         
@@ -192,7 +189,7 @@ if data_file is not None:
             elif restricciones["Costo de Transporte"]:
                 mod_co += CostoTotal[(s,m)] == CostoTransporte[(s,m)] + Compra[(s,m)]*precios[s][m]
             elif restricciones["Costo de los Inventarios"]:
-                mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] + Compra[(s,m)]*precios[s][m]
+                mod_co += CostoTotal[(s,m)] == CostoInventario[(s,m)] + CostoAlmacenamiento[(s,m)] + CostoCapital[(s,m)] # + Compra[(s,m)]*precios[s][m]
             else:
                 mod_co += CostoTotal[(s,m)] == Compra[(s,m)]*precios[s][m]
         
