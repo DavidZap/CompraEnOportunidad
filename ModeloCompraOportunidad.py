@@ -14,9 +14,14 @@ st.title('Compra en Oportunidad')
 data_file = st.file_uploader("Upload XLSX", type=["XLSX"])
 
 if data_file is not None:
-    df_input = pd.read_excel(r"Input.xlsx",sheet_name="Semanas")
-    precio3=pd.read_excel(r"Input.xlsx",sheet_name="Precios")
-    demanda3=pd.read_excel(r"Input.xlsx",sheet_name="Demanda")
+    try:
+        df_input = pd.read_excel(data_file, sheet_name="Semanas")
+        data_file.seek(0)
+        precio3 = pd.read_excel(data_file, sheet_name="Precios")
+        data_file.seek(0)
+        demanda3 = pd.read_excel(data_file, sheet_name="Demanda")
+    except Exception as e:
+        st.error(f"❌ Error al leer el archivo: {e}")
     data=[df_input,precio3,demanda3]
     
     st.subheader('Demanda y Precios por Semana')
