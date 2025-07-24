@@ -3,3 +3,4 @@ streamlit-aggrid==0.3.3
 PuLP==2.7.0
 openpyxl==3.0.10
 plotly==5.13.1
+altair==4.2.2
